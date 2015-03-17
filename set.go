@@ -93,3 +93,19 @@ func (this *Client) Del(key string) error {
 	}
 	return makeError(resp, key)
 }
+
+//指定key的原子增长
+//
+//key 指定的key
+// vaule 增加值
+//返回 err 执行的错误，err为空，返回增加后的值
+func (this *Client) Incr(key string, value int) (Value, error) {
+    resp, err := this.Client.Do("incr", key, value)
+    if err != nil {
+        return "", goerr.NewError(err, "Incr %s error", key)
+    }   
+    if len(resp) == 2 && resp[0] == "ok" {
+        return Value(resp[1]), nil 
+    }   
+    return "", makeError(resp, key)
+}
